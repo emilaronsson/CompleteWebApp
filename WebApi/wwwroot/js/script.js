@@ -9,11 +9,14 @@ let buyPlotView = document.getElementById("buy-plot-view");
 let contactView = document.getElementById("contact-view"); 
 let myPlotView = document.getElementById("my-plot-view");
 let roverView = document.getElementById("rover-view");
-let viewArray = [indexView, buyPlotView, contactView, myPlotView, roverView];
+let singleRoverView = document.getElementById("single-rover-view");
+let viewArray = [indexView, buyPlotView, contactView, myPlotView, roverView, singleRoverView];
 const apiUrl = "https://localhost:44397/api/Rovers";
-const snglRoverURL = "https://localhost:44397/api/Rovers/"
+const curiosityUrl = "https://localhost:44397/api/Rovers/1";
+const opportunityUrl = "https://localhost:44397/api/Rovers/2";
+const spiritUrl = "https://localhost:44397/api/Rovers/3";
 
-async function show(data) {
+async function showRovers(data) {
     let tab =
         `<tr>
         
@@ -24,22 +27,28 @@ async function show(data) {
     for (let r of data) {
         tab += `<tr> 
     
-    <td><a href="https://localhost:44397/api/Rovers/${r.id}">${r.name}</a></td>
+    <td><a type="button" onclick="logRover()">${r.name}</a></td>
     <td>${r.mission}</td>          
 </tr>`;
     }
     document.getElementById("rovers").innerHTML = tab;
 }
+async function showRover(data) {
+    let content = `<h1>${data.name}</h1>
+    <h2>${data.mission}</h2>`;
+    document.getElementById("rover").innerHTML = content;
+}
 async function getApi(url) {
     var response = await fetch(url);
     var data = await response.json();
-    var strdata = JSON.stringify(data)
-    console.log(strdata);
     console.log(data);
-    show(data);
+    showRovers(data);
+    showRover(data);
 }
-getApi(apiUrl)
-
+getApi(apiUrl);
+getApi(curiosityUrl);
+getApi(opportunityUrl);
+getApi(spiritUrl);
 
 
 for (let i = 0; i < viewArray.length; i++) {
@@ -53,7 +62,6 @@ const getData = async (url) => {
     const data = await response.json();
     return data;
 }
-
 customCreateElements = (tag, attribute, attributeName, parent) => {
     element = document.createElement(tag);
     if (attribute) {
@@ -62,15 +70,7 @@ customCreateElements = (tag, attribute, attributeName, parent) => {
     parent.appendChild(element);
     return element;
 }
-/*
-class Rover {
-    constructor(Id, Name, Mission) {
-        this.Id = Id;
-        this.Name = Name;
-        this.Mission = Mission;
-    }
-}
-*/
+
 class Plot {
     isSold = false;
     constructor(imgSrc, plotId) {
@@ -279,4 +279,13 @@ function logRovers() {
         view.setAttribute("hidden", "hidden");
     }
     roverView.removeAttribute("hidden", "hidden");
+}
+
+function logRover() {
+    
+    showRover();
+    for (const view of viewArray) {
+        view.setAttribute("hidden", "hidden");
+    }
+    singleRoverView.removeAttribute("hidden", "hidden");
 }
